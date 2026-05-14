@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "URLZoom",
+  "version": "1.7.0",
+  "permissions": ["tabs", "storage", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html"
+}
