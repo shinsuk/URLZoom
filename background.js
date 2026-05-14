@@ -16,10 +16,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           chrome.tabs.setZoom(tabId, factor);
         });
       } else {
-        // 저장된 설정이 없으면 브라우저 기본값(0)으로 재설정
-        chrome.tabs.setZoomSettings(tabId, {scope: 'per-origin'}, () => {
-          chrome.tabs.setZoom(tabId, 0); 
-        });
+        // 저장된 설정이 없으면 기존 도메인 시스템(per-origin)으로 권한을 넘김
+        chrome.tabs.setZoomSettings(tabId, {scope: 'per-origin'});
       }
     });
   }

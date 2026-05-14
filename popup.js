@@ -51,9 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const settings = result.zoomSettings || {};
         delete settings[currentTab.url];
         chrome.storage.local.set({zoomSettings: settings}, () => {
-          chrome.tabs.setZoomSettings(currentTab.id, {scope: 'per-origin'}, () => {
-            chrome.tabs.setZoom(currentTab.id, 0); // 기본값 복원
-          });
+          chrome.tabs.setZoomSettings(currentTab.id, {scope: 'per-origin'});
           status.innerText = "설정이 삭제되었습니다.";
         });
       });
