@@ -6,7 +6,7 @@
 ## 2. 핵심 요구사항 (Core Requirements)
 
 ### A. URL 기반 정밀 제어
-- **Exact Match 우선**: 도메인(`tossinvest.com`)이 아닌 전체 경로(`.../stocks/A005930/order`)를 기준으로 줌 수치를 저장한다.
+- **Prefix Match 지원**: 전체 경로를 기준으로 저장하되, 저장된 URL 뒤에 추가 파라미터가 붙어도 일치하도록 부분 일치(Prefix Match)를 지원한다. 여러 개가 매칭될 경우 가장 구체적인(긴) URL을 우선한다.
 - **격리성**: 같은 도메인 내의 다른 URL(예: `/order` vs `/chart`)은 서로의 줌 설정에 영향을 주지 않아야 한다 (`chrome.tabs.setZoomSettings`의 `per-tab` scope 활용).
 
 ### B. 줌 상태 유지 및 복구 (Persistence)
@@ -44,4 +44,4 @@
 
 ## 5. 제외 사항 (Out of Scope)
 - 도메인 전체 일괄 적용 기능 (크롬 기본 기능과 중복되므로 제외).
-- 정규표현식(Regex)을 이용한 복잡한 URL 매칭 (현재는 전체 URL 일치만 구현).
+- 정규표현식(Regex)을 이용한 복잡한 URL 매칭 (현재는 Prefix 일치 방식으로 유연성 확보).

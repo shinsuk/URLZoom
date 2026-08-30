@@ -20,8 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // 기존 저장된 값 있으면 불러오기
       chrome.storage.local.get(['zoomSettings'], (result) => {
         const settings = result.zoomSettings || {};
-        if (settings[currentTab.url]) {
-          const factor = typeof settings[currentTab.url] === 'number' ? settings[currentTab.url] : settings[currentTab.url].factor;
+        
+        const matchedKey = Object.keys(settings)
+          .filter(key => currentTab.url.startsWith(key))
+          .sort((a, b) => b.length - a.length)[0];
+
+        if (matchedKey) {
+          const factor = typeof settings[matchedKey] === 'number' ? settings[matchedKey] : settings[matchedKey].factor;
           zoomInput.value = Math.round(factor * 100);
         } else {
           zoomInput.value = Math.round(currentZoom * 100);
@@ -45,11 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // 삭제 버튼 클릭
     document.getElementById('clearBtn').addEventListener('click', () => {
       chrome.storage.local.get(['zoomSettings'], (result) => {
         const settings = result.zoomSettings || {};
-        delete settings[currentTab.url];
+        
+        const matchedKey = Object.keys(settings)
+          .filter(key => currentTab.url.startsWith(key))
+          .sort((a, b) => b.length - a.length)[0];
+          
+        if (matchedKey) {
+          delete settings[matchedKey];
+        } else {
+          delete settings[currentTab.url];
+        }
+        
         chrome.storage.local.set({zoomSettings: settings}, () => {
           chrome.tabs.setZoomSettings(currentTab.id, {scope: 'per-origin'});
           status.innerText = "설정이 삭제되었습니다.";

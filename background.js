@@ -9,9 +9,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     chrome.storage.local.get(['zoomSettings'], (result) => {
       const settings = result.zoomSettings || {};
       
-      // 현재 URL이 저장된 목록에 있는지 확인 (전체 일치)
-      if (settings[tab.url]) {
-        const factor = typeof settings[tab.url] === 'number' ? settings[tab.url] : settings[tab.url].factor;
+      // 현재 URL이 저장된 목록에 있는지 확인 (부분 일치 허용, 가장 긴 URL 우선 매칭)
+      const matchedKey = Object.keys(settings)
+        .filter(key => tab.url.startsWith(key))
+        .sort((a, b) => b.length - a.length)[0];
+      
+      if (matchedKey) {
+        const factor = typeof settings[matchedKey] === 'number' ? settings[matchedKey] : settings[matchedKey].factor;
         chrome.tabs.setZoomSettings(tabId, {scope: 'per-tab'}, () => {
           chrome.tabs.setZoom(tabId, factor);
         });

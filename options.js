@@ -6,7 +6,46 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('sort-title').addEventListener('click', () => changeSort('title'));
   document.getElementById('sort-url').addEventListener('click', () => changeSort('url'));
   document.getElementById('sort-zoom').addEventListener('click', () => changeSort('zoom'));
+  
+  const saveAllBtn = document.getElementById('saveAllBtn');
+  if (saveAllBtn) {
+    saveAllBtn.addEventListener('click', saveAllSettings);
+  }
 });
+
+function saveAllSettings() {
+  const tbody = document.getElementById('urlList');
+  const rows = tbody.querySelectorAll('tr');
+  const newSettings = {};
+
+  rows.forEach((tr) => {
+    const titleInput = tr.querySelector('.title-input');
+    const urlInput = tr.querySelector('.url-input');
+    const zoomInput = tr.querySelector('.zoom-input');
+
+    if (!urlInput || !zoomInput) return;
+
+    const rawUrl = urlInput.value.trim();
+    const title = titleInput ? titleInput.value.trim() : '';
+    let zoomVal = parseFloat(zoomInput.value);
+
+    if (!rawUrl) return;
+
+    if (isNaN(zoomVal) || zoomVal <= 0) {
+      zoomVal = 100;
+    }
+
+    const factor = zoomVal / 100;
+    newSettings[rawUrl] = { factor, title };
+  });
+
+  chrome.storage.local.set({ zoomSettings: newSettings }, () => {
+    const status = document.getElementById('status');
+    status.textContent = '모든 설정이 저장되었습니다.';
+    setTimeout(() => { status.textContent = ''; }, 2000);
+    restoreOptions();
+  });
+}
 
 function changeSort(key) {
   if (currentSort.key === key) {
